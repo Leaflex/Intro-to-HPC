@@ -100,6 +100,31 @@ def mylog(x, kmax=100, tol=1e-14, printhow=0):
     
     return s
 
+def myGaussianElim(A, B):
+    n = len(B)
+    
+    # Set diagonals to 1
+    for i in range(n):
+        factor = A[i][i]
+        for j in range(i, n):
+            A[i][j] = A[i][j] / factor
+        B[i] = B[i] / factor
+        
+        # Eliminate lower triangle
+        for k in range(i+1, n):
+            factor = A[k][i]
+            for j in range(i, n):
+                A[k][j] -= factor * A[i][j]
+                B[k] -= factor * B[i]
+        
+    X = [0 for _ in range(n)]
+    for i in range(n-1, -1, -1):
+        X[i] = B[i]
+        for j in range(i+1, n):
+            X[i] -= A[i][j] * X[j]
+    
+    return X
+
 def compareMy():
     test_values = [0.5, 1, 2, 5, 10]
 
