@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import numpy as np
+import matplotlib.pyplot as plt
 import myfuncs as my
 
 def myGaussianElim(A, B):
@@ -36,15 +37,7 @@ def myGaussianElim(A, B):
 
 def main():
     A, B = my.p_4('inputs/input.txt')
-    # A = np.array([
-    #     [-0.001, 0.01, -0.1, 1.0],
-    #     [-0.000008, 0.0004, -0.02, 1.0],
-    #     [0.000008, 0.0004, 0.02, 1.0],
-    #     [0.001, 0.01, 0.1, 1.0],
-    # ], dtype=float)
     a = A.copy()
-
-    # B = np.array([0.9950041653, 0.9998000067, 0.9998000067, 0.9950041653], dtype=float)
     b = B.copy()
 
     print(f'A: {A}')
@@ -55,12 +48,10 @@ def main():
 
     myOutput = [float(x) for x in myGaussianElim(A, B)]
     print(f"myGaussianElim(A, B): {myOutput}\n")
-    
-  # Check if the results are close within the tolerance
-    comparison = np.allclose(myOutput, numpyOutput, atol=1e-12)
-    print(f"Are the results within tolerance? {comparison}")
 
-    
+    # Check if the results are close within the tolerance
+    comparison = np.allclose(myOutput, numpyOutput, atol=1e-12)
+    print(f"Are the results within tolerance (1e-12)? {comparison}")
 
 if __name__ == '__main__':
     main()

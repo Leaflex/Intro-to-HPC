@@ -118,7 +118,19 @@ def compareMy():
 import numpy as np
 
 def p_4(filename):
-    '''Creates numpy array for 4th degree linear system from input file of points'''
+    '''
+    Creates numpy array for 4th degree linear system from input file of points.
+    
+    A = np.array([
+        [-0.001, 0.01, -0.1, 1.0],
+        [-0.000008, 0.0004, -0.02, 1.0],
+        [0.000008, 0.0004, 0.02, 1.0],
+        [0.001, 0.01, 0.1, 1.0],
+    ], dtype=float)
+    
+    B = np.array([0.9950041653, 0.9998000067, 0.9998000067, 0.9950041653], dtype=float)
+    '''
+    
     fid = open(filename, 'r')
 
     A = np.array([]).reshape(0, 4)  # Prepare A as a 2D array (equation system)
