@@ -5,7 +5,6 @@ import myfuncs as my
 def myGaussianElim(A, B):
     n = len(B)
 
-    # Set diagonals to 1
     for i in range(n):
         # Partial pivoting: swap rows if needed
         max_row = i + np.argmax(np.abs(A[i:, i]))
@@ -13,6 +12,7 @@ def myGaussianElim(A, B):
             A[[i, max_row]] = A[[max_row, i]]  # Swap rows in A
             B[i], B[max_row] = B[max_row], B[i]  # Swap corresponding B values
         
+        # Set diagonals to 1
         factor = A[i][i]
         for j in range(i, n):
             A[i][j] = A[i][j] / factor
