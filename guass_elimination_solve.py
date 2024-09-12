@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import myfuncs as my
+import mylinalg as my
 import numpy as np
 
 # Coefficient matrix A
@@ -15,7 +15,8 @@ B = np.array([-4, -50, -26], dtype=float)
 print(f"A: {A}\n")
 print(f"B: {B}\n")
 
-myOutput = my.myGaussianElim(A, B)
 numpyOutput = np.linalg.solve(A, B)
-print(f"myGaussianElim(A, B): {myOutput}\n")
 print(f"np.linalg.solve(A, B): {numpyOutput}\n")
+
+myOutput = my.myGaussianElim(A, B)
+print(f"myGaussianElim(A, B): {myOutput}\n")

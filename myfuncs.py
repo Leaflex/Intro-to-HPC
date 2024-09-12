@@ -100,31 +100,6 @@ def mylog(x, kmax=100, tol=1e-14, printhow=0):
     
     return s
 
-def myGaussianElim(A, B):
-    n = len(B)
-    
-    # Set diagonals to 1
-    for i in range(n):
-        factor = A[i][i]
-        for j in range(i, n):
-            A[i][j] = A[i][j] / factor
-        B[i] = B[i] / factor
-        
-        # Eliminate lower triangle
-        for k in range(i+1, n):
-            factor = A[k][i]
-            for j in range(i, n):
-                A[k][j] -= factor * A[i][j]
-                B[k] -= factor * B[i]
-    # Back substitution
-    x = [0 for _ in range(n)]
-    for i in range(n-1, -1, -1):
-        x[i] = B[i]
-        for j in range(i+1, n):
-            x[i] -= A[i][j] * x[j]
-    
-    return x
-
 def compareMy():
     test_values = [0.5, 1, 2, 5, 10]
 
@@ -139,4 +114,16 @@ def compareMy():
         my_log = mylog(val)
         np_log = np.log(val)
         print(f"x = {val}: mylog = {my_log}, np.log = {np_log}, difference = {abs(my_log - np_log)}")
+        
+def read_input_file(filename):
+    '''Read the input file'''
+    fid = open(filename, 'r')
+    while True:
+        line = fid.readline()
+        if line:
+            print(line)
+        else:
+            break
+        
+    
         
