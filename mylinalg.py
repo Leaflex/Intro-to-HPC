@@ -13,7 +13,7 @@ def myGaussianElim(A, B):
             factor = A[k][i]
             for j in range(i, n):
                 A[k][j] -= factor * A[i][j]
-                B[k] -= factor * B[i]
+            B[k] -= factor * B[i]
          
     # Back substitution
     x = [0 for _ in range(n)]
