@@ -17,7 +17,7 @@ b = B.copy()
 print(f"A: {A}\n")
 print(f"B: {B}\n")
 
-numpyOutput = np.linalg.solve(A, B)
+numpyOutput = np.linalg.solve(a, b)
 print(f"np.linalg.solve(A, B): {numpyOutput}\n")
 
 myOutput = [float(x) for x in my.myGaussianElim(A, B)]
