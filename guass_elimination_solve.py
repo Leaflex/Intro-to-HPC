@@ -17,5 +17,5 @@ print(f"B: {B}\n")
 
 myOutput = my.myGaussianElim(A, B)
 numpyOutput = np.linalg.solve(A, B)
-print(f"myGaussianElim(A, B): {myOutput}\n\n")
-print(f"np.linalg.solve(A, B): {numpyOutput}")
+print(f"myGaussianElim(A, B): {myOutput}\n")
+print(f"np.linalg.solve(A, B): {numpyOutput}\n")

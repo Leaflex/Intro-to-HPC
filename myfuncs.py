@@ -116,14 +116,14 @@ def myGaussianElim(A, B):
             for j in range(i, n):
                 A[k][j] -= factor * A[i][j]
                 B[k] -= factor * B[i]
-        
-    X = [0 for _ in range(n)]
+    # Back substitution
+    x = [0 for _ in range(n)]
     for i in range(n-1, -1, -1):
-        X[i] = B[i]
+        x[i] = B[i]
         for j in range(i+1, n):
-            X[i] -= A[i][j] * X[j]
+            x[i] -= A[i][j] * x[j]
     
-    return X
+    return x
 
 def compareMy():
     test_values = [0.5, 1, 2, 5, 10]
