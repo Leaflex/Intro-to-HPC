@@ -43,7 +43,7 @@ def main():
     print(f'A: {A}')
     print(f'B: {B}\n')
 
-    numpyOutput = np.linalg.solve(a, b)
+    numpyOutput = np.linalg.solve(A.copy(), B.copy())
     print(f"np.linalg.solve(A, B): {numpyOutput}\n")
 
     myOutput = [float(x) for x in myGaussianElim(A, B)]
@@ -52,6 +52,34 @@ def main():
     # Check if the results are close within the tolerance
     comparison = np.allclose(myOutput, numpyOutput, atol=1e-12)
     print(f"Are the results within tolerance (1e-12)? {comparison}")
+
+    # Plot the results
+    plot_results([-0.1, -0.02, 0.02, 0.1], b, myOutput)
+
+def plot_results(x_values, y_values, coeffs):
+    # Define the polynomial function p(x) from the coefficients
+    def polynomial(x):
+        return coeffs[0]*x**3 + coeffs[1]*x**2 + coeffs[2]*x + coeffs[3]
+
+    # Create an array of x-values for plotting the polynomial
+    print(x_values)
+    x_poly = np.linspace(min(x_values), max(x_values), 500)
+    y_poly = polynomial(x_poly)
+
+    # Plot the original points (x_values, y_values)
+    plt.scatter(x_values, y_values, color='red', label='Original Points f(x)')
+
+    # Plot the polynomial curve p(x)
+    plt.plot(x_poly, y_poly, color='blue', label='Polynomial p(x)')
+
+    # Add title, legend, and labels
+    plt.title('Original Points vs. Polynomial Fit')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('submissions/lab6_output.png')
+    plt.show()
 
 if __name__ == '__main__':
     main()
