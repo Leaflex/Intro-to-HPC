@@ -78,7 +78,6 @@ def plot_results(x_values, y_values, coeffs):
     plt.ylabel('y')
     plt.legend()
     plt.grid(True)
-    plt.savefig('submissions/lab6_output.png')
     plt.show()
 
 if __name__ == '__main__':
