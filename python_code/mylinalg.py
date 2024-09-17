@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import numpy as np
 import matplotlib.pyplot as plt
-import myfuncs as my
 
 def myGaussianElim(A, B):
     n = len(B)
@@ -35,27 +34,6 @@ def myGaussianElim(A, B):
 
     return x
 
-def main():
-    A, B = my.p_4('inputs/input.txt')
-    a = A.copy()
-    b = B.copy()
-
-    print(f'A: {A}')
-    print(f'B: {B}\n')
-
-    numpyOutput = np.linalg.solve(A.copy(), B.copy())
-    print(f"np.linalg.solve(A, B): {numpyOutput}\n")
-
-    myOutput = [float(x) for x in myGaussianElim(A, B)]
-    print(f"myGaussianElim(A, B): {myOutput}\n")
-
-    # Check if the results are close within the tolerance
-    comparison = np.allclose(myOutput, numpyOutput, atol=1e-12)
-    print(f"Are the results within tolerance (1e-12)? {comparison}")
-
-    # Plot the results
-    plot_results([-0.1, -0.02, 0.02, 0.1], b, myOutput)
-
 def plot_results(x_values, y_values, coeffs):
     # Define the polynomial function p(x) from the coefficients
     def polynomial(x):
@@ -79,6 +57,82 @@ def plot_results(x_values, y_values, coeffs):
     plt.legend()
     plt.grid(True)
     plt.show()
+
+def p_4(filename):
+    '''
+    Creates numpy array for 4th degree linear system from input file of points.
+    
+    A = np.array([
+        [-0.001, 0.01, -0.1, 1.0],
+        [-0.000008, 0.0004, -0.02, 1.0],
+        [0.000008, 0.0004, 0.02, 1.0],
+        [0.001, 0.01, 0.1, 1.0],
+    ], dtype=float)
+    
+    B = np.array([0.9950041653, 0.9998000067, 0.9998000067, 0.9950041653], dtype=float)
+    '''
+    
+    fid = open(filename, 'r')
+
+    A = np.array([]).reshape(0, 4)  # Prepare A as a 2D array (equation system)
+    B = np.array([])  # B as a 1D array for constants
+
+    while True:
+        line = fid.readline()
+        if not line:
+            break
+
+        # Split the line to get the point values
+        point = line.split(', ')
+        x_value_str = point[0].strip()
+
+        # Replace any Unicode minus signs with regular minus signs
+        x_value_str = x_value_str.replace('−', '-')  # Fix Unicode minus
+        x_value = float(x_value_str)
+
+        # Create the equation coefficients from x_value
+        equation = np.array([x_value**3, x_value**2, x_value, 1])
+
+        # Append to matrix A
+        A = np.vstack([A, equation])
+
+        # Extract the y-value (either cos, sin, tan, or just a number)
+        b_value = point[1].strip()
+        if 'cos' in b_value:
+            b_value = np.cos(float(b_value.strip('cos()\n').replace('−', '-')))
+        elif 'sin' in b_value:
+            b_value = np.sin(float(b_value.strip('sin()\n').replace('−', '-')))
+        elif 'tan' in b_value:
+            b_value = np.tan(float(b_value.strip('tan()\n').replace('−', '-')))
+        else:
+            b_value = float(b_value.replace('−', '-').strip())
+
+        # Append to vector B
+        B = np.append(B, b_value)
+
+    fid.close()
+    return (A, B)
+
+def main():
+    A, B = p_4('inputs/input.txt')
+    a = A.copy()
+    b = B.copy()
+
+    print(f'A: {A}')
+    print(f'B: {B}\n')
+
+    numpyOutput = np.linalg.solve(A.copy(), B.copy())
+    print(f"np.linalg.solve(A, B): {numpyOutput}\n")
+
+    myOutput = [float(x) for x in myGaussianElim(A, B)]
+    print(f"myGaussianElim(A, B): {myOutput}\n")
+
+    # Check if the results are close within the tolerance
+    comparison = np.allclose(myOutput, numpyOutput, atol=1e-12)
+    print(f"Are the results within tolerance (1e-12)? {comparison}")
+
+    # Plot the results
+    plot_results([-0.1, -0.02, 0.02, 0.1], b, myOutput)
 
 if __name__ == '__main__':
     main()
