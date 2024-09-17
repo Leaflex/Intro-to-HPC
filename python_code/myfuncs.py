@@ -115,8 +115,6 @@ def compareMy():
         np_log = np.log(val)
         print(f"x = {val}: mylog = {my_log}, np.log = {np_log}, difference = {abs(my_log - np_log)}")
 
-import numpy as np
-
 def p_4(filename):
     '''
     Creates numpy array for 4th degree linear system from input file of points.
