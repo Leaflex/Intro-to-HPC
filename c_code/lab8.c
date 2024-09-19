@@ -16,28 +16,22 @@ double myexp( double x, int kmax, double tol, int printhow) {
         printf("kmax must be a positive integer: kmax = %d\n", kmax);
         return -1;
     }
-    
     const double e = 2.718281828459;
     int x0 = (int)round(x); // Non-fractional part of x
     double exp0 = pow(e, x0);// Non-fractional part of exp(x)
-
     double z = x - x0;
     double sum = 0.0;
-
     // Compute fractional part of exp(x) with z
     for (int k = 0; k <= kmax; k++) {
         double term = pow(z, k) / factorial(k);
         sum += term;
-
         if (printhow == 1) {
             printf("Iteration %d, Term: %.14lf, Partial Sum: %.14lf\n", k, term, sum);
         }
-
         if (fabs(term) < tol) {  // Stop if the term is smaller than the tolerance
             break;
         }
     }
-
     return exp0 * sum;  // Final result: e^x0 * sum of series for exp(z)z
 }
 

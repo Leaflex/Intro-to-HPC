@@ -22,31 +22,6 @@ double myexp( double x, int kmax, double tol, int printhow) {
         printf("kmax must be a positive integer: kmax = %d\n", kmax);
         return -1;
     }
-    double e = 2.718281828459;
-    double x0 = round(x);
-    double z = x - x0;
-    double exp0 = x0;
-    double s = 1;
-    double term = 1.0;
-    for (int k = 1; k <= kmax + 1; k++) {
-        term *= z / k;
-        s += term;
-        if (printhow == 1) {
-            printf("Iteration %lf, Term: %lf, Partial Sum: %lf\n", k, term, s);
-        }
-        if (fabs(term) < tol) {
-            break;
-        }
-    }
-    return exp0 * s;
-}
-
-double myexp( double x, int kmax, double tol, int printhow) {
-    printf("%.3lf, %d, %.14lf, %d\n", x, kmax, tol, printhow);
-    if (kmax <= 0) {
-        printf("kmax must be a positive integer: kmax = %d\n", kmax);
-        return -1;
-    }
     const double e = 2.718281828459;
     int x0 = (int)round(x); // Non-fractional part of x
     double exp0 = pow(e, x0);// Non-fractional part of exp(x)
@@ -64,4 +39,30 @@ double myexp( double x, int kmax, double tol, int printhow) {
         }
     }
     return exp0 * sum;  // Final result: e^x0 * sum of series for exp(z)z
+}
+
+double mylog(double x, int kmax, double tol, int printhow) {
+    printf("%.3lf, %d, %.14lf, %d\n", x, kmax, tol, printhow);
+    if (x <= 0) { 
+        printf("x must be greater than 0: x = %lf\n", x);
+        return -1;
+    }
+    if (kmax <= 0) {
+        printf("kmax must be a positive integer: kmax = %d\n", kmax);
+        return -1;
+    }
+    double s = x;
+    for (int i = 0; i < kmax; i++) {
+        double f_s = exp(s) - x;
+        double fp_s = exp(s);
+        double s_new = s - f_s / fp_s;
+        if (printhow == 1) {
+            printf("Iteration %3d: log(%.3lf) = %10.6lf, Change = %.14lf\n", i, x, s_new, fabs(s_new - s));
+        }
+        if (fabs(s_new - s) < tol) {
+            return s_new;
+        }
+        s = s_new;
+    }
+    return s;
 }
