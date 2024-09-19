@@ -34,7 +34,9 @@ int main(int argc, char **argv) {
         printf("Example: ./lab7.o 25.0 100 1.0E-14 1\n");
         return 0;
     }
+
     double result = mylog(atof(argv[1]), atoi(argv[2]), atof(argv[3]), atoi(argv[4]));
+    
     if (result > 0) {
         printf("\nResult of log(%.3lf) = %.5lf\n", atof(argv[1]), result);
     } else {
