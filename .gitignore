@@ -1,8 +1,9 @@
+# Python environment and configurations
 __pycache__
 .DS_Store
 venv/
-
-
 .vscode/
 *.dSYM
+
+# Compiled C files
 *.o
