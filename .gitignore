@@ -7,3 +7,4 @@ venv/
 
 # Compiled C files
 *.o
+*.exe
