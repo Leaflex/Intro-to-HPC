@@ -57,7 +57,7 @@ def main():
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
-    
+
     # Read files and create lists of sermons and images
     if rank == 0:
         if len(sys.argv) < 4:
@@ -80,21 +80,23 @@ def main():
                 imgs[key] = os.path.join(dirname, filename)
 
         keys = list(sermons.keys())
-        num_files = len(keys) 
-        
+        num_files = len(keys)
+
         # Calculate chunk sizes for each process
-        chunk_sizes = [(num_files // size) + (1 if i < (num_files % size) else 0) for i in range(size)]
+        chunk_sizes = [(num_files // size) + 
+                       (1 if i < (num_files % size) else 0) for i in range(size)]
         offsets = [sum(chunk_sizes[:i]) for i in range(size)]
         chunks = [keys[offsets[i]: offsets[i] + chunk_sizes[i]] for i in range(size)]
-        
-    else: 
+
+    else:
         # Set all parameters to none to standarize all the processes at the start
         sermons = None
         imgs = None
         dest_dir = None
         chunks = None
 
-    # Broadcast and scatter as blocking because processes have nothing to do until they have this information
+    # Broadcast and scatter as blocking because processes
+    #   have nothing to do until they have this information
     # Broadcast shared data (sermons, imgs, dest_dir)
     sermons = comm.bcast(sermons, root=0)
     imgs = comm.bcast(imgs, root=0)
@@ -105,7 +107,7 @@ def main():
 
     # Each rank processes its chunk of data (including root because it's not doing anything else)
     process_files(local_keys, dest_dir, imgs, sermons)
-        
+
     # Ensure all processes finish before exiting
     comm.Barrier()
 
