@@ -94,8 +94,7 @@ def main():
         dest_dir = None
         chunks = None
 
-    # Broadcast and scatter as blocking because processes
-    #   have nothing to do until they have this information
+    # Broadcast and scatter as blocking because processes have nothing to do until they have this information
     # Broadcast shared data (sermons, imgs, dest_dir)
     sermons = comm.bcast(sermons, root=0)
     imgs = comm.bcast(imgs, root=0)
