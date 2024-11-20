@@ -103,9 +103,8 @@ def main():
     # Scatter chunks of keys to all processes
     local_keys = comm.scatter(chunks, root=0)
 
-    # Each non-root rank processes its chunk of data
-    if rank != 0:
-        process_files(local_keys, dest_dir, imgs, sermons)
+    # Each rank processes its chunk of data (including root because it's not doing anything else)
+    process_files(local_keys, dest_dir, imgs, sermons)
         
     # Ensure all processes finish before exiting
     comm.Barrier()
