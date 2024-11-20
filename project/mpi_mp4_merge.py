@@ -83,8 +83,7 @@ def main():
         num_files = len(keys)
 
         # Calculate chunk sizes for each process
-        chunk_sizes = [(num_files // size) + 
-                       (1 if i < (num_files % size) else 0) for i in range(size)]
+        chunk_sizes = [(num_files // size) + (1 if i < (num_files % size) else 0) for i in range(size)]
         offsets = [sum(chunk_sizes[:i]) for i in range(size)]
         chunks = [keys[offsets[i]: offsets[i] + chunk_sizes[i]] for i in range(size)]
 
