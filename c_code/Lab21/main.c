@@ -24,9 +24,9 @@ int main(int argc , char* argv [])
     get_input (argc ,argv ,my_rank ,comm_sz ,&a,&b,&N);
 
     // Get time
-    double time_start ;
-    if (my_rank ==0)
-    { time_start = MPI_Wtime (); }
+    double time_start;
+    if (my_rank == 0)
+    { time_start = MPI_Wtime(); }
 
     // Run local trapezoidal rule
     const double h = (b-a)/((double)N);
