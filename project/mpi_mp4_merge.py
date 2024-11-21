@@ -8,6 +8,8 @@ import subprocess
 
 def get_duration(audio_file):
     """Returns duration of mp3 file on local file system in seconds"""
+    print("IN get_duration()")
+    print(f'----------audio_file----------: {audio_file}')
     get_duration_cmd = [
         'ffprobe', 
         '-v', 'error', 
@@ -17,6 +19,11 @@ def get_duration(audio_file):
     ]
     process = subprocess.run(get_duration_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     output = process.stdout
+    error_output = process.stderr
+    
+    # Print outputs for debugging
+    print("FFprobe output:", output)
+    print("FFprobe error output:", error_output)
 
     try:
         duration_json = json.loads(output)
@@ -24,20 +31,22 @@ def get_duration(audio_file):
     except (KeyError, ValueError) as e:
         raise ValueError("Could not extract duration from ffprobe output") from e
 
-def process_files(file_chunk, dest_dir, imgs, sermons):
+def process_files(file_chunk, dest_dir, pngs, mp3s):
     """Process a chunk of files with ffmpeg"""
-    for catalog_num in file_chunk:
-        output_filename = f"{catalog_num}.mp4"
+    for file in file_chunk:
+        print(f'Processing mp3: {file}')
+        output_filename = f"{file}.mp4"
+        print(f'Output filename: {output_filename}')
         output_dest = os.path.join(dest_dir, output_filename)
-        duration = get_duration(sermons[catalog_num])
+        duration = get_duration(mp3s[file])
 
         cmd = [
             'ffmpeg',
             '-r', '1',
             '-loop', '1',
-            '-i', imgs[catalog_num],
-            '-i', sermons[catalog_num],
-            '-c:v', 'h264_videotoolbox',
+            '-i', pngs[file],
+            '-i', mp3s[file],
+            '-c:v', 'mpeg4',
             '-vf', 'scale=1920:1080',
             '-pix_fmt', 'yuv420p',
             '-color_range', 'pc',
@@ -47,9 +56,15 @@ def process_files(file_chunk, dest_dir, imgs, sermons):
             '-af', 'volume=-6dB,acompressor=threshold=0.5:ratio=2:attack=200:release=1000',
             output_dest
         ]
+        
+        print(f'-----------mp3 {file}-----------\n{cmd}\n\n')
 
-        subprocess.run(cmd, check=True)
-        print(f'Created {output_dest}')
+        try:
+            subprocess.run(cmd, check=True)
+            print(f'Created {output_dest}')
+        except subprocess.CalledProcessError as e:
+            print(f'\n-----------------\nAn error occurred\n-----------------\n{e}')
+
 
 def main():
     """Main function for parallelized file processing"""
@@ -58,29 +73,46 @@ def main():
     rank = comm.Get_rank()
     size = comm.Get_size()
 
-    # Read files and create lists of sermons and images
+    # Read files and create lists of mp3s and pngs
     if rank == 0:
         if len(sys.argv) < 4:
-            print('Usage: mp4_merge.py <SERMON_SRC_DIR> <IMG_SRC_DIR> <DEST_DIR>')
+            print('Usage: mp4_merge.py <MP3_SRC_DIR> <PNG_SRC_DIR> <DEST_DIR>')
             return
 
-        sermon_src_dir, img_src_dir, dest_dir = sys.argv[-3:]
+        mp3_src_dir, png_src_dir, dest_dir = sys.argv[-3:]
+        
+        print(f"mp3 source directory: {mp3_src_dir}")
+        print(f"png source directory: {png_src_dir}")
+        print(f"Destination directory: {dest_dir}")
+        
+        # Create output destination if it does exist
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
+            print(f'Destination directory not found. Created destination directory: {dest_dir}')
 
-        sermons = {}
-        imgs = {}
-        for dirname, _, filenames in os.walk(sermon_src_dir):
+        # Dictionary of mp3 filepaths.
+        # ~/path/to/file/XY12.mp3
+        mp3s = {}
+        for dirname, _, filenames in os.walk(mp3_src_dir):
             for filename in filenames:
                 key = filename.split('/')[-1].strip('.mp3')
-                sermons[key] = os.path.join(dirname, filename)
-        for dirname, _, filenames in os.walk(img_src_dir):
+                mp3s[key] = os.path.join(dirname, filename)
+                
+        # Dictionary of png filepaths.
+        # Input filenames must be as follows and correspond to a mp3 key:
+        # ~/path/to/file/XY12.png
+        pngs = {}
+        for dirname, _, filenames in os.walk(png_src_dir):
             for filename in filenames:
                 key = filename.split('/')[-1].strip('.png')
-                imgs[key] = os.path.join(dirname, filename)
+                pngs[key] = os.path.join(dirname, filename)
+                
+        print(f'\n----mp3s----: {mp3s}\n')
+        print(f'\n----imgs----: {pngs}\n')
 
-        keys = list(sermons.keys())
+        keys = list(mp3s.keys())
         num_files = len(keys)
+        print(f'Number of mp3s: {len(keys)}')
 
         # Calculate chunk sizes for each process
         chunk_sizes = [(num_files // size) + (1 if i < (num_files % size) else 0) for i in range(size)]
@@ -89,22 +121,22 @@ def main():
 
     else:
         # Set all parameters to none to standarize all the processes at the start
-        sermons = None
-        imgs = None
+        mp3s = None
+        pngs = None
         dest_dir = None
         chunks = None
 
     # Broadcast and scatter as blocking because processes have nothing to do until they have this information
     # Broadcast shared data (sermons, imgs, dest_dir)
-    sermons = comm.bcast(sermons, root=0)
-    imgs = comm.bcast(imgs, root=0)
+    mp3s = comm.bcast(mp3s, root=0)
+    pngs = comm.bcast(pngs, root=0)
     dest_dir = comm.bcast(dest_dir, root=0)
 
     # Scatter chunks of keys to all processes
     local_keys = comm.scatter(chunks, root=0)
 
     # Each rank processes its chunk of data (including root because it's not doing anything else)
-    process_files(local_keys, dest_dir, imgs, sermons)
+    process_files(local_keys, dest_dir, pngs, mp3s)
 
     # Ensure all processes finish before exiting
     comm.Barrier()
