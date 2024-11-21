@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
-"""
-Parallelized script to merge mp3 and png files into mp4 files using mpi4py and ffmpeg.
-Usagempirun -n 6 python mpi_mp4_merge.py /home/aesomers/sermons /home/aesomers/pngs /home/aesomers/output
-"""
+"""Parallelized script to merge mp3 and png files into mp4 files using mpi4py and ffmpeg."""
 
 from mpi4py import MPI
 import json
@@ -113,7 +110,7 @@ def main():
                 pngs[key] = os.path.join(dirname, filename)
                 
         print(f'\n----mp3s----: {mp3s}\n')
-        print(f'\n----imgs----: {pngs}\n')
+        print(f'\n----pngs----: {pngs}\n')
 
         keys = list(mp3s.keys())
         num_files = len(keys)
@@ -132,7 +129,7 @@ def main():
         chunks = None
 
     # Broadcast and scatter as blocking because processes have nothing to do until they have this information
-    # Broadcast shared data (sermons, imgs, dest_dir)
+    # Broadcast shared data (mp3s, pngs, dest_dir)
     mp3s = comm.bcast(mp3s, root=0)
     pngs = comm.bcast(pngs, root=0)
     dest_dir = comm.bcast(dest_dir, root=0)
