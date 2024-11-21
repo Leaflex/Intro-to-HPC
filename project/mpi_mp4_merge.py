@@ -122,6 +122,7 @@ def main():
     # Read files and create lists of mp3s and pngs
     if rank == 0:
         if len(sys.argv) < 4:
+            print(f"Only {len(sys.argv)} input arguments.\nargv: {sys.argv}")
             print('Usage: mpirun -np <num_processes> python3 mpi_mp4_merge.py /mp3/src/dir /png/src/dir /output/dir')
             return
 
