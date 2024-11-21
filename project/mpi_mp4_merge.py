@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Parallelized script to merge mp3 and png files into mp4 files using mpi4py and ffmpeg."""
+
 from mpi4py import MPI
 import json
 import sys
