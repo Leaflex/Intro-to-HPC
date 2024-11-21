@@ -1,15 +1,31 @@
 #!/usr/bin/env python3
-# Usage: mp4_merge.py <SERMON_SRC_DIR> <IMG_SRC_DIR> <DEST_DIR>
-# Ensure ffmpeg is installed on your computer
-# On Linux, switch the codec from h264_videotoolbox to libx264
-# Ensure the sermon filename is of form XY12_example_series.mp3
 
-"""Script to merge mp3 and png/PSD files into mp4 files."""
+"""Script to merge mp3 and png files into mp4 files.
+
+This script merges mp3 audio files with corresponding png images into mp4 files 
+using ffmpeg. The mp3 files should follow the format XY12_example_series.mp3, 
+while png files should be named XY12.png. The resulting mp4 files are saved 
+in the specified destination directory.
+
+Usage: 
+    - ./mp4_merge.py <SERMON_SRC_DIR> <IMG_SRC_DIR> <DEST_DIR>
+
+Dependencies:
+    - ffmpeg (or compatible tool) must be installed.
+    - On Linux systems, use the `libx264` video codec. 
+    - On Mac Systems, use the 'h264_videotoolbox' video codec.
+
+Arguments:
+    SERMON_SRC_DIR (str): Directory with mp3 files.
+    IMG_SRC_DIR (str): Directory with png images.
+    DEST_DIR (str): Destination directory for mp4 files.
+"""
 
 import json
 import sys
 import os
 import subprocess
+import time
 
 def get_duration(audio_file):
     """Returns duration of mp3 file on local file system in seconds"""
@@ -40,6 +56,9 @@ def main():
     """Merge files in SERMON_SRC_DIR and IMG_SRC_DIR files into mp4
     files at DEST_DIR
     """
+    
+    # Store start time for calculating script runtime
+    start_time = time.time()
 
     # Arguments must be directories, not files
     if len(sys.argv) < 4:
@@ -72,7 +91,7 @@ def main():
     imgs = {}
     for dirname, dirnames, filenames in os.walk(img_src_dir):
         for filename in filenames:
-            key = filename.split('/')[-1].strip('.png')
+            key = filename.split('/')[-1].removesuffix('.png')
             imgs[key] = os.path.join(dirname, filename)
 
     print(f'\n----sermons----: {sermons}\n')
@@ -122,6 +141,10 @@ def main():
             print(f'Created {output_dest}')
         except subprocess.CalledProcessError as e:
             print(f'\n-----------------\nAn error occurred\n-----------------\n{e}')
+    
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"\nScript execution completed in {elapsed_time:.2f} seconds.")
 
 if __name__ == "__main__":
     main()
