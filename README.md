@@ -10,3 +10,4 @@ Git repository for ComS 424, Introduction to High Performance Computing
 # HPC Cluster
 - Connect with: `ssh aesomers@nova.its.iastate.edu`
 - SCP from cluster to local: `scp aesomers@nova.its.iastate.edu:/path/to/remote/file.txt /local/path/to/save/` (run locally)
+- SCP from local to cluster: `scp /path/to/file/or/directory aesomers@nova.its.iastate.edu:/path/to/destination/` (destination usually `/home/aesomers`)
