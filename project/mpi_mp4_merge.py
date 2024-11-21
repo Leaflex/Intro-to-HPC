@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-"""Parallelized script to merge mp3 and png files into mp4 files using mpi4py and ffmpeg."""
+"""
+Parallelized script to merge mp3 and png files into mp4 files using mpi4py and ffmpeg.
+Usagempirun -n 6 python mpi_mp4_merge.py /home/aesomers/sermons /home/aesomers/pngs /home/aesomers/output
+"""
 
 from mpi4py import MPI
 import json
@@ -78,7 +81,7 @@ def main():
     # Read files and create lists of mp3s and pngs
     if rank == 0:
         if len(sys.argv) < 4:
-            print('Usage: mp4_merge.py <MP3_SRC_DIR> <PNG_SRC_DIR> <DEST_DIR>')
+            print('Usage: mpirun -n <num_processes> python mpi_mp4_merge.py /mp3/src/dir /png/src/dir /output/dir')
             return
 
         mp3_src_dir, png_src_dir, dest_dir = sys.argv[-3:]
