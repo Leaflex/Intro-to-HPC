@@ -10,6 +10,10 @@ ffmpeg. The resulting mp4 files are saved in the specified output directory.
 
 Usage:
     mpirun -np <num_processes> python3 mpi_mp4_merge.py /mp3/src/dir /png/src/dir /output/dir
+    
+    Note: It is recommended to not use more than 60% of your device's available CPU cores when
+        running this script on a personal device. If running on a dedicated server, up to 
+        80%-90% may be used.
 
 Arguments:
     /mp3/src/dir: Directory containing the mp3 files. 
@@ -108,7 +112,6 @@ def process_files(file_chunk, dest_dir, pngs, mp3s):
         except subprocess.CalledProcessError as e:
             print(f'\n-----------------\nAn error occurred\n-----------------\n{e}')
 
-
 def main():
     """Main function for parallelized file processing"""
     # Store start time for calculating script runtime
@@ -124,6 +127,8 @@ def main():
         if len(sys.argv) < 4:
             print(f"Only {len(sys.argv)} input arguments.\nargv: {sys.argv}")
             print('Usage: mpirun -np <num_processes> python3 mpi_mp4_merge.py /mp3/src/dir /png/src/dir /output/dir')
+            print(f"Number of CPU cores: {os.cpu_count()}\nIt is not recommended to use more than 60% of available cores.")
+
             return
 
         mp3_src_dir, png_src_dir, dest_dir = sys.argv[-3:]
@@ -137,22 +142,22 @@ def main():
             os.makedirs(dest_dir)
             print(f'Destination directory not found. Created destination directory: {dest_dir}')
 
-        # Dictionary of mp3 filepaths.
-        # ~/path/to/file/XY12.mp3
+        # Dictionary of mp3 file paths.
+        # Assumes 4-character key at the beginning of the filename which doesn't hold true for 100% of inputs.
         mp3s = {}
         for dirname, _, filenames in os.walk(mp3_src_dir):
             for filename in filenames:
-                key = filename.split('/')[-1].removesuffix('.mp3')
-                mp3s[key] = os.path.join(dirname, filename)
-                
-        # Dictionary of png filepaths.
-        # Input filenames must be as follows and correspond to a mp3 key:
-        # ~/path/to/file/XY12.png
+                if filename.endswith(".mp3"):
+                    key = os.path.splitext(filename.split("/")[-1])[0][:4]
+                    mp3s[key] = os.path.join(dirname, filename)
+
+        # Dictionary of png file paths. Keys are a string
         pngs = {}
         for dirname, _, filenames in os.walk(png_src_dir):
             for filename in filenames:
-                key = filename.split('/')[-1].removesuffix('.png')
-                pngs[key] = os.path.join(dirname, filename)
+                if filename.endswith(".png"):
+                    key = filename.split("/")[-1].removesuffix(".png")
+                    pngs[key] = os.path.join(dirname, filename)
                 
         print(f'\n----mp3s----: {mp3s}\n')
         print(f'\n----pngs----: {pngs}\n')
