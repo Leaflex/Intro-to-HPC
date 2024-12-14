@@ -9,7 +9,7 @@ mp3 and png files, retrieves the duration of the audio files, and merges them in
 ffmpeg. The resulting mp4 files are saved in the specified output directory.
 
 Usage:
-    mpirun -np <num_processes> python3 mpi_mp4_merge.py /mp3/src/dir /png/src/dir /output/dir
+    mpirun -np <num_processes> python3 mpi_mp4_merge.py </mp3/src/dir> </png/src/dir> </output/dir>
     
     Note: It is recommended to not use more than 60% of your device's available CPU cores when
         running this script on a personal device. If running on a dedicated server, up to 
