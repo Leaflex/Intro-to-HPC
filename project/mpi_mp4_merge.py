@@ -116,7 +116,7 @@ def main():
     """Main function for parallelized file processing"""
     # Store start time for calculating script runtime
     start_time = time.time()
-    
+
     # MPI setup
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
@@ -132,11 +132,11 @@ def main():
             return
 
         mp3_src_dir, png_src_dir, dest_dir = sys.argv[-3:]
-        
+
         print(f"mp3 source directory: {mp3_src_dir}")
         print(f"png source directory: {png_src_dir}")
         print(f"Destination directory: {dest_dir}")
-        
+
         # Create output destination if it does exist
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
@@ -158,7 +158,7 @@ def main():
                 if filename.endswith(".png"):
                     key = filename.split("/")[-1].removesuffix(".png")
                     pngs[key] = os.path.join(dirname, filename)
-                
+
         print(f'\n----mp3s----: {mp3s}\n')
         print(f'\n----pngs----: {pngs}\n')
 
@@ -192,7 +192,7 @@ def main():
 
     # Ensure all processes finish before exiting
     comm.Barrier()
-    
+
     # Calculate total runtime of script
     if rank == 0:
         end_time = time.time()
